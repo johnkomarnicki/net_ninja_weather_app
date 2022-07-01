@@ -29,26 +29,26 @@ const getCities = async () => {
     savedCities.value = JSON.parse(
       localStorage.getItem("savedCities")
     );
+
+    const requests = [];
+    const openWeatherAPIkey = "d8192170b76649bac31b723e270b821e";
+    savedCities.value.forEach((city) => {
+      requests.push(
+        axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${city.coords.lat}&lon=${city.coords.lng}&appid=${openWeatherAPIkey}&units=imperial`
+        )
+      );
+    });
+
+    const weatherData = await Promise.allSettled(requests);
+
+    // Flicker Delay
+    await new Promise((res) => setTimeout(res, 1000));
+
+    weatherData.forEach((value, index) => {
+      savedCities.value[index].weather = value.value.data;
+    });
   }
-
-  const requests = [];
-  const openWeatherAPIkey = "d8192170b76649bac31b723e270b821e";
-  savedCities.value.forEach((city) => {
-    requests.push(
-      axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${city.coords.lat}&lon=${city.coords.lng}&appid=${openWeatherAPIkey}&units=imperial`
-      )
-    );
-  });
-
-  const weatherData = await Promise.allSettled(requests);
-
-  // Flicker Delay
-  await new Promise((res) => setTimeout(res, 1000));
-
-  weatherData.forEach((value, index) => {
-    savedCities.value[index].weather = value.value.data;
-  });
 };
 
 // Remove Cities
