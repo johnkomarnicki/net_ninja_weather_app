@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col flex-1 items-center">
+  <div>
     <Suspense>
       <template #default>
         <AsyncCityView />
